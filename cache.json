@@ -6,9 +6,9 @@
     "stars": "4",
     "commits": "142",
     "followers": "4",
-    "loc": "32,996",
-    "added": "37,737",
-    "deleted": "4,741"
+    "loc": "33,004",
+    "added": "37,767",
+    "deleted": "4,763"
   },
   "repos": {
     "SuneethJerri/Object-Detection-and-Tracking-using-UAV": {
@@ -17,9 +17,9 @@
       "deleted": 4
     },
     "SuneethJerri/SuneethJerri": {
-      "head": "534ec33043497aebfd03d52f60b699d0bf79dacf",
-      "added": 874,
-      "deleted": 170
+      "head": "b263d0b4b90b4727b938b96988c63a12fefd4a5a",
+      "added": 904,
+      "deleted": 192
     },
     "SuneethJerri/tickerql": {
       "head": "7bb316090ddc7adf6d49ee895a56d1b00d711cdc",
