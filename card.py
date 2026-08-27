@@ -56,36 +56,32 @@ CHAR_W = 9.45         # only affects canvas size and the panel's left edge
 MARGIN = 18
 PANEL_COLS = 66       # the dot leaders are computed against this
 
-# A quadcopter, because the drone is the one thing here that had to work
-# outdoors. Kept to 40 columns so the panel starts at a predictable x.
-ART = r"""
-   .-''-.                            .-''-.
-  /      \__                      __/      \
- |   ()   | \__                __/ |   ()   |
-  \      /    \__            __/    \      /
-   '-..-'       \__        __/       '-..-'
-                   \______/
-                   |      |
-                   | [oo] |
-                   |______|
-                 __/      \__
-   .-''-.     __/            \__     .-''-.
-  /      \ __/                  \__ /      \
- |   ()   |                        |   ()   |
-  \      /                          \      /
-   '-..-'                            '-..-'
-"""
+# The art is a picture made of characters, not characters to read, so it gets
+# its own type size. At the panel's 15px the 60x110 block would be 1,140px tall
+# against a 500px panel; at 8px it is a halftone the width of the panel it sits
+# beside. It lives in art.txt so replacing it is a file swap, not a Python edit.
+ART_FONT_SIZE = 8
+ART_LINE_H = 8
+ART_CHAR_W = 4.85
+
+ART = (HERE / "art.txt").read_text()
+
 
 THEMES = {
+    # Red on black, and red on near-white for viewers in a light theme. The
+    # added/deleted pair stays inside the scheme rather than reaching for the
+    # usual green: a green +/- in a two-colour card is the one thing on it that
+    # looks borrowed. Lightness carries the difference, and the ++ and --
+    # already say which is which.
     "dark": {
-        "bg": "#0d1117", "edge": "#30363d", "text": "#c9d1d9", "art": "#7d8590",
-        "key": "#ffa657", "value": "#a5d6ff", "dots": "#484f58",
-        "rule": "#30363d", "add": "#3fb950", "sub": "#f85149",
+        "bg": "#0a0a0b", "edge": "#3d1418", "text": "#e8e3e3", "art": "#c02a30",
+        "key": "#ff5257", "value": "#e8e3e3", "dots": "#54272b",
+        "rule": "#3d1418", "add": "#ff8a8e", "sub": "#a3151c",
     },
     "light": {
-        "bg": "#ffffff", "edge": "#d0d7de", "text": "#1f2328", "art": "#6e7781",
-        "key": "#953800", "value": "#0550ae", "dots": "#afb8c1",
-        "rule": "#d0d7de", "add": "#1a7f37", "sub": "#cf222e",
+        "bg": "#fdfbfb", "edge": "#e3c9cb", "text": "#171414", "art": "#c02a30",
+        "key": "#b3151c", "value": "#171414", "dots": "#e0c3c5",
+        "rule": "#e3c9cb", "add": "#d93a41", "sub": "#7a0f14",
     },
 }
 
@@ -100,22 +96,25 @@ def rows(s: dict) -> list:
     """
     return [
         ("title", f"{LOGIN.lower()}@github"),
-        ("kv", "Role", "M.Tech, Robotics and Machine Intelligence"),
-        ("kv", "Host", "IIIT Allahabad"),
-        ("kv", "Prev", "B.Tech CSE, Keshav Memorial Inst. of Technology"),
-        ("kv", "Uptime", s["uptime"]),
+        ("line", "M.Tech, Robotics and Machine Intelligence"),
+        ("line", "IIIT Allahabad, 2025 to present"),
+        ("line", "B.Tech Computer Science, KMIT Hyderabad, 2020 to 2024"),
         None,
         ("head", "Research"),
-        ("kv", "Thesis", "Encrypted VPN traffic under concept drift"),
-        ("kv", "Thesis.Method", "Active learning + RL drift meta-controller"),
-        ("kv", "Vision", "Attention grounding for VLM hallucination"),
-        ("kv", "Vision.Result", "-50% hallucinated objects on CHAIR"),
-        ("kv", "Robotics", "Autonomous UAV target detection and tracking"),
+        ("kv", "Drift", "Encrypted VPN traffic classified from a live stream"),
+        ("kv", "Drift.Method", "Active learning with delayed labels, RL control"),
+        ("kv", "Grounding", "BCE spatial alignment over token attention maps"),
+        ("kv", "Grounding.CHAIR", "-50% hallucinated objects"),
+        ("kv", "Grounding.POPE", "precision 75.18% to 85.00%"),
+        ("kv", "Robotics", "UAV target detection and tracking, YOLOv7 + SORT"),
+        None,
+        ("head", "Built"),
+        ("kv", "tickerql", "A SQL agent that cannot write to its database"),
         None,
         ("head", "Stack"),
-        ("kv", "Languages.Programming", "Python, C/C++, Java, JavaScript, SQL"),
-        ("kv", "Languages.ML", "PyTorch, Hugging Face, scikit-learn, OpenCV"),
-        ("kv", "Languages.Systems", "Postgres, FastAPI, Django, React"),
+        ("kv", "Languages", "Python, C/C++, Java, JavaScript, SQL"),
+        ("kv", "ML", "PyTorch, Hugging Face, scikit-learn, OpenCV"),
+        ("kv", "Systems", "Postgres, FastAPI, Django, React"),
         ("kv", "Tools", "Git, Linux, Docker, Wireshark"),
         None,
         ("head", "Contact"),
@@ -123,6 +122,7 @@ def rows(s: dict) -> list:
         ("kv", "LinkedIn", "suneeth-jerri"),
         None,
         ("head", "GitHub"),
+        ("kv", "Uptime", s["uptime"]),
         ("stats", s),
     ]
 
@@ -149,6 +149,16 @@ def line_kv(x: float, y: int, key: str, value: str) -> str:
         f'<tspan x="{x}" y="{y}"><tspan class="d">. </tspan>{head}'
         f'<tspan class="d">: {dots} </tspan>'
         f'<tspan class="v">{escape(value)}</tspan></tspan>'
+    )
+
+
+def line_plain(x: float, y: int, text: str) -> str:
+    """A statement rather than a field. The three lines under the title are not
+    key/value pairs and forcing them into that shape ("Role: ...", "Host: ...")
+    made the most important thing on the card look like metadata."""
+    return (
+        f'<tspan x="{x}" y="{y}"><tspan class="d">. </tspan>'
+        f'<tspan class="v">{escape(text)}</tspan></tspan>'
     )
 
 
@@ -207,7 +217,7 @@ def render(stats: dict, theme: str) -> str:
     c = THEMES[theme]
     art = ART.strip("\n").split("\n")
     art_cols = max(len(line) for line in art)
-    panel_x = MARGIN + art_cols * CHAR_W + 2 * CHAR_W
+    panel_x = MARGIN + art_cols * ART_CHAR_W + 2 * CHAR_W
 
     body: list[str] = []
     y = MARGIN + FONT_SIZE
@@ -218,6 +228,8 @@ def render(stats: dict, theme: str) -> str:
         kind = row[0]
         if kind == "title":
             body.append(line_title(panel_x, y, row[1]))
+        elif kind == "line":
+            body.append(line_plain(panel_x, y, row[1]))
         elif kind == "head":
             body.append(line_head(panel_x, y, row[1]))
         elif kind == "kv":
@@ -232,10 +244,10 @@ def render(stats: dict, theme: str) -> str:
     # panel it reads as one composition instead of two columns that happen to
     # share a background.
     panel_h = y - (MARGIN + FONT_SIZE)
-    art_h = len(art) * LINE_H
-    art_y = MARGIN + FONT_SIZE + max(0, round((panel_h - art_h) / 2))
+    art_h = len(art) * ART_LINE_H
+    art_y = MARGIN + ART_FONT_SIZE + max(0, round((panel_h - art_h) / 2))
     art_lines = "".join(
-        f'<tspan x="{MARGIN}" y="{art_y + i * LINE_H}">{escape(line)}</tspan>'
+        f'<tspan x="{MARGIN}" y="{art_y + i * ART_LINE_H}">{escape(line)}</tspan>'
         for i, line in enumerate(art)
     )
 
@@ -258,7 +270,7 @@ text, tspan {{ white-space: pre; }}
 </style>
 <rect x="0.5" y="0.5" width="{width - 1}" height="{height - 1}" rx="10"
       fill="{c['bg']}" stroke="{c['edge']}"/>
-<text xml:space="preserve" fill="{c['art']}">{art_lines}</text>
+<text xml:space="preserve" font-size="{ART_FONT_SIZE}px" fill="{c['art']}">{art_lines}</text>
 <text xml:space="preserve" fill="{c['text']}">{"".join(body)}</text>
 </svg>
 """
