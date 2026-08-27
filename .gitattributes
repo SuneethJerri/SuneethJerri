@@ -1,0 +1,9 @@
+# card-*.svg and cache.json are build output. The daily workflow commits them
+# and so does anyone who runs card.py locally, which means the two collide on
+# every overlapping edit - and the "resolution" is never to merge the two
+# renders, it is to run card.py again. Marking them generated keeps them out of
+# diffs and reviews, where reading a rendered SVG line by line tells you
+# nothing that re-rendering would not.
+card-light.svg linguist-generated=true
+card-dark.svg  linguist-generated=true
+cache.json     linguist-generated=true
