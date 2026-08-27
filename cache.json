@@ -1,0 +1,40 @@
+{
+  "stats": {
+    "uptime": "5 years, 5 months, 15 days",
+    "repos": "5",
+    "contributed": "0",
+    "stars": "4",
+    "commits": "140",
+    "followers": "4",
+    "loc": "32,380",
+    "added": "36,967",
+    "deleted": "4,587"
+  },
+  "repos": {
+    "SuneethJerri/Object-Detection-and-Tracking-using-UAV": {
+      "head": "8992e1f4cbe5898e61a8e8f479fcd632e7f10e61",
+      "added": 10573,
+      "deleted": 4
+    },
+    "SuneethJerri/SuneethJerri": {
+      "head": "abe85e1f98377c7e07ccedb344a41f70284e6039",
+      "added": 104,
+      "deleted": 16
+    },
+    "SuneethJerri/tickerql": {
+      "head": "7bb316090ddc7adf6d49ee895a56d1b00d711cdc",
+      "added": 24633,
+      "deleted": 4434
+    },
+    "SuneethJerri/rag-chatbot": {
+      "head": "849a8f221dcc81ca7361d43ec5db1349b9f42e5c",
+      "added": 521,
+      "deleted": 30
+    },
+    "SuneethJerri/Django-authentication-": {
+      "head": "13b4c68ba3534c62585eb00ad325d9647fe2b9a4",
+      "added": 1136,
+      "deleted": 103
+    }
+  }
+}

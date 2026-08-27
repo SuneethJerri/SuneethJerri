@@ -1,0 +1,63 @@
+# Rebuilds the profile card so its numbers are current.
+#
+# card.py fetches repositories, stars, commits, followers and lines of code from
+# the GraphQL API and rewrites both SVGs. The commit below only happens when the
+# rendered output actually differs, so a quiet day produces no commit rather
+# than a daily "update card" that says nothing.
+#
+# GITHUB_TOKEN is enough for public data. Set an ACCESS_TOKEN secret with the
+# `repo` scope to count private repositories too; card.py prefers it when set.
+name: card
+
+on:
+  schedule:
+    # 04:00 UTC, which is a quiet hour for GitHub's scheduler. It is best-effort
+    # either way, and a skipped day self-heals: the card is rebuilt from scratch
+    # every run, not accumulated.
+    - cron: "0 4 * * *"
+  push:
+    branches: [main]
+    # Pushing a rendered SVG must not trigger the job that renders SVGs.
+    paths-ignore:
+      - "card-*.svg"
+      - "cache.json"
+  workflow_dispatch:
+
+concurrency:
+  group: card
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Render the card
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        # card.py has no dependencies outside the standard library, so there is
+        # nothing to install and nothing to pin.
+        run: python3 card.py
+
+      - name: Commit if anything moved
+        run: |
+          if git diff --quiet -- card-light.svg card-dark.svg; then
+            echo "card unchanged"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add card-light.svg card-dark.svg cache.json
+          git commit -m "Rebuild the card"
+          git push
