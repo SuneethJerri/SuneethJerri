@@ -1,14 +1,14 @@
 {
   "stats": {
-    "uptime": "5 years, 8 months, 5 days",
+    "uptime": "5 years, 8 months, 6 days",
     "repos": "8",
     "contributed": "0",
     "stars": "4",
-    "commits": "251",
+    "commits": "254",
     "followers": "4",
-    "loc": "51,907",
-    "added": "62,215",
-    "deleted": "10,308"
+    "loc": "53,176",
+    "added": "63,869",
+    "deleted": "10,693"
   },
   "repos": {
     "SuneethJerri/Object-Detection-and-Tracking-using-UAV": {
@@ -16,10 +16,10 @@
       "added": 10573,
       "deleted": 4
     },
-    "SuneethJerri/wot-building-gateway": {
-      "head": "46cfebd6e4c9ba67a6d6c1531402848eb2eeabc0",
-      "added": 3914,
-      "deleted": 244
+    "SuneethJerri/wot-energy-gateway": {
+      "head": "8aada4baa75f11c4c8d377d344d7e1d0978654c2",
+      "added": 5568,
+      "deleted": 629
     },
     "SuneethJerri/constrained-spsa-racing": {
       "head": "455632b1b7f6e78e711659d8514be1c55357c827",
@@ -32,7 +32,7 @@
       "deleted": 1
     },
     "SuneethJerri/SuneethJerri": {
-      "head": "ff075a51bedd6bbe0ac46ea95adc954f5b62a414",
+      "head": "c73d4655c57723f6753493d0e1eb4b75bc27188a",
       "added": 915,
       "deleted": 204
     },
